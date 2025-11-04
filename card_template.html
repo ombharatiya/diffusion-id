@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: {{page_width}}in {{page_height}}in;
+            margin: 0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            width: {{page_width}}in;
+            height: {{page_height}}in;
+            font-family: Arial, Helvetica, sans-serif;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            color-adjust: exact;
+        }
+        
+        .photo-section {
+            width: {{page_width}}in;
+            height: {{photo_height}}in;
+            background-color: {{background_color}};
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .photo-section img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .name-box {
+            width: {{page_width}}in;
+            height: {{name_height}}in;
+            background-color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .name-box h1 {
+            font-size: {{name_font_size}}pt;
+            font-weight: bold;
+            color: #000000;
+            padding: 0 0.1in;
+            line-height: 1.1;
+        }
+        
+        .qr-section {
+            width: {{page_width}}in;
+            height: {{qr_height}}in;
+            background-color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .qr-section img {
+            width: {{qr_size}}in;
+            height: {{qr_size}}in;
+            object-fit: contain;
+        }
+        
+        .message-box {
+            width: {{page_width}}in;
+            height: {{message_height}}in;
+            background-color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .message-box p {
+            font-size: {{message_font_size}}pt;
+            color: #000000;
+            padding: 0 0.05in;
+            line-height: 1.25;
+        }
+    </style>
+</head>
+<body>
+    <div class="photo-section">
+        <img src="{{person_image}}" alt="{{person_name}}">
+    </div>
+    <div class="name-box">
+        <h1>{{person_name}}</h1>
+    </div>
+    <div class="qr-section">
+        <img src="{{qr_code}}" alt="QR Code">
+    </div>
+    <div class="message-box">
+        <p>{{message_text}}</p>
+    </div>
+</body>
+</html>
