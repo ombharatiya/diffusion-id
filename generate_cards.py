@@ -8,6 +8,7 @@ import os
 import sys
 import json
 import csv
+import traceback
 from pathlib import Path
 from typing import Dict, List
 from reportlab.lib.units import inch
@@ -103,9 +104,29 @@ class CardGenerator:
         """
         Break text into lines optimally based on character threshold.
         Tries to break as close to threshold as possible without exceeding it.
+        Breaks on spaces and commas.
         """
-        words = text.split()
-        if len(words) == 1:
+        # Split on space or comma, keeping the delimiter with the preceding token
+        tokens = []
+        current_token = ""
+        
+        for char in text:
+            if char in [' ', ',']:
+                if current_token:
+                    if char == ',':
+                        tokens.append(current_token + ',')
+                    else:
+                        tokens.append(current_token)
+                    current_token = ""
+            else:
+                current_token += char
+        
+        if current_token:
+            tokens.append(current_token)
+        
+        if len(tokens) == 0:
+            return [text]
+        if len(tokens) == 1:
             return [text]
         
         # For 2 lines, find the optimal break point
@@ -114,8 +135,8 @@ class CardGenerator:
             best_first_line_len = 0
             
             # Try each possible break point
-            for i in range(1, len(words)):
-                first_line = ' '.join(words[:i])
+            for i in range(1, len(tokens)):
+                first_line = ' '.join(tokens[:i])
                 first_line_len = len(first_line)
                 
                 # Check if this break point is valid (doesn't exceed threshold)
@@ -127,30 +148,30 @@ class CardGenerator:
             
             # If we found a valid break point, use it
             if best_break > 0:
-                first_line = ' '.join(words[:best_break])
-                second_line = ' '.join(words[best_break:])
+                first_line = ' '.join(tokens[:best_break])
+                second_line = ' '.join(tokens[best_break:])
                 return [first_line, second_line]
             else:
                 # No valid break found, just split in half
-                mid = len(words) // 2
-                first_line = ' '.join(words[:mid])
-                second_line = ' '.join(words[mid:])
+                mid = len(tokens) // 2
+                first_line = ' '.join(tokens[:mid])
+                second_line = ' '.join(tokens[mid:])
                 return [first_line, second_line]
         
         # For other cases, use simple greedy approach
         lines = []
         current_line = []
         
-        for word in words:
-            test_line = ' '.join(current_line + [word])
+        for token in tokens:
+            test_line = ' '.join(current_line + [token])
             if len(test_line) <= char_threshold:
-                current_line.append(word)
+                current_line.append(token)
             else:
                 if current_line:
                     lines.append(' '.join(current_line))
-                    current_line = [word]
+                    current_line = [token]
                 else:
-                    lines.append(word)
+                    lines.append(token)
                 
                 if len(lines) >= max_lines:
                     break
@@ -422,7 +443,6 @@ class CardGenerator:
             
         except Exception as e:
             print(f"  ✗ Error creating PDF: {e}")
-            import traceback
             traceback.print_exc()
             return False
     
@@ -455,7 +475,7 @@ class CardGenerator:
             
             # Generate output filename
             safe_name = self._sanitize_filename(person_name)
-            output_filename = f"{safe_name}_card.pdf"
+            output_filename = f"{safe_name}.pdf"
             output_path = output_dir / output_filename
             
             # Generate card
