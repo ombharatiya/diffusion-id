@@ -3,7 +3,7 @@
   "qr_code_path": "input-sample/QR_code.jpeg",
   "output_directory": "output",
   "message_text": "Know more about HPV related Cancer &<br/>its prevention in females and males.",
-  "background_color": "#A8D8F0",
+  "background_color": "#8DC5FE",
   
   "_comment_page": "Page dimensions (1 inch = 72 points)",
   "page_width_pt": 216,
@@ -39,12 +39,12 @@
   "message_box_border_color": "#000000",
   
   "_comment_text_behavior": "Text wrapping and sizing (conditional based on length)",
-  "name_length_threshold": 30,
+  "name_length_threshold": 26,
   "name_max_lines": 2,
   
   "_comment_padding": "Internal padding for text elements",
   "text_horizontal_padding_pt": 2,
-  "name_box_horizontal_margin_pt": 30,
+  "name_box_horizontal_margin_pt": 25,
   
   "_comment_calculated": "Content width = page_width_pt - (2 * horizontal_padding_pt) = 196pt"
 }
