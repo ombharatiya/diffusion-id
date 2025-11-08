@@ -1,5 +1,7 @@
 # PDF Card Generator
 
+**Part 2 of DiffusionID Project**
+
 Generates 3" x 7" portrait PDF cards with person images, names, QR codes, and custom messages. Features intelligent text wrapping, conditional layouts, and fully configurable dimensions.
 
 ## Installation

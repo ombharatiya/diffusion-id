@@ -1,8 +1,8 @@
 # AI Image Processing Pipeline
 
-**Part 1 of Desk Standee Project**
+**Part 1 of DiffusionID Project**
 
-Face swap and cartoon stylization system for generating professional portrait cards at scale.
+Identity-preserving diffusion pipeline for face swap and cartoon stylization at scale.
 
 ---
 

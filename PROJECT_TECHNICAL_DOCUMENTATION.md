@@ -1,7 +1,7 @@
-# Technical Documentation: AI-Powered Portrait Card Generation System
+# Technical Documentation: DiffusionID
 
-**Project Name:** Desk Standee - Automated Portrait Card Generation Platform  
-**Domain:** Computer Vision, Generative AI, Document Automation  
+**Project Name:** DiffusionID - Identity-Preserving Portrait Generation Pipeline  
+**Domain:** Computer Vision, Generative AI, Diffusion Models, Document Automation  
 **Date:** October-November 2025
 
 ---

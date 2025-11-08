@@ -1,10 +1,11 @@
-# Desk Standee: AI-Powered Portrait Card Generation System
+# DiffusionID: AI-Powered Identity-Preserving Portrait Generation
 
 [![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![ComfyUI](https://img.shields.io/badge/ComfyUI-Workflow-orange.svg)](https://github.com/comfyanonymous/ComfyUI)
+[![Stable Diffusion](https://img.shields.io/badge/Stable%20Diffusion-XL-purple.svg)](https://stability.ai/)
 
-> **End-to-end automated system for generating professional print-ready portrait cards at scale. Combines AI-powered face swap with cartoon stylization and intelligent PDF generation.**
+> **Production-grade diffusion pipeline for identity-preserving portrait stylization at scale. Combines InstantID face embeddings with cartoon style transfer and automated print-ready card generation.**
 
 ---
 
@@ -24,7 +25,7 @@ A two-stage production pipeline that transforms user photographs into stylized c
 ## 📁 Project Structure
 
 ```
-desk-standee/
+diffusion-id/
 ├── ai-pipeline/                    # Stage 1: AI Image Processing
 │   ├── comfyui_api.py             # ComfyUI REST API client
 │   ├── batch_processor.py         # Parallel batch processing
@@ -202,8 +203,8 @@ graph LR
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/desk-standee.git
-cd desk-standee
+git clone https://github.com/yourusername/diffusion-id.git
+cd diffusion-id
 
 # AI Pipeline setup
 cd ai-pipeline

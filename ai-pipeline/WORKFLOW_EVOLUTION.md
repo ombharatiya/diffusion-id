@@ -1,6 +1,6 @@
 # ComfyUI Workflow Evolution & Tuning History
 
-**Project:** AI-Powered Face Swap & Stylization Pipeline  
+**Project:** DiffusionID - Identity-Preserving Portrait Generation  
 **Period:** October 27-30, 2025  
 **Total Iterations:** 24 workflow versions
 
