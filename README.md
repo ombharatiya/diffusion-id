@@ -203,7 +203,7 @@ graph LR
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/diffusion-id.git
+git clone https://github.com/ombharatiya/diffusion-id.git
 cd diffusion-id
 
 # AI Pipeline setup
