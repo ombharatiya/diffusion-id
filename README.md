@@ -32,14 +32,18 @@ desk-standee/
 │   ├── workflows/                 # 24 workflow iterations
 │   │   └── workflow_faceid_swap_v2.json  # Final production workflow
 │   ├── examples/                  # Sample input/output images
-│   ├── AI_PIPELINE_README.md      # Detailed AI pipeline docs
+│   ├── README.md                  # Detailed AI pipeline docs
 │   └── WORKFLOW_EVOLUTION.md      # Complete tuning history
 │
-├── generate_cards.py              # Stage 2: PDF generation
-├── config.json                    # Layout configuration
-├── input-sample/                  # Sample CSV and images
-├── output/                        # Generated PDFs
-├── PDF_GENERATOR_README.md        # Detailed PDF generator docs
+├── pdf-generator/                 # Stage 2: PDF Card Generation
+│   ├── generate_cards.py          # Main PDF generation script
+│   ├── config.json                # Layout configuration
+│   ├── card_template.html         # HTML template reference
+│   ├── input-sample/              # Sample CSV and images
+│   ├── output/                    # Generated PDFs
+│   ├── README.md                  # Detailed PDF generator docs
+│   └── requirements.txt           # Python dependencies
+│
 └── PROJECT_TECHNICAL_DOCUMENTATION.md  # Complete technical specs
 ```
 
@@ -65,7 +69,7 @@ python main.py --listen 0.0.0.0 --port 8188
 python batch_processor.py
 ```
 
-**📖 [Full AI Pipeline Documentation →](ai-pipeline/AI_PIPELINE_README.md)**
+**📖 [Full AI Pipeline Documentation →](ai-pipeline/)**
 
 ---
 
@@ -74,6 +78,8 @@ python batch_processor.py
 Convert portraits into print-ready cards:
 
 ```bash
+cd pdf-generator
+
 # Install dependencies
 pip install -r requirements.txt
 
@@ -84,7 +90,7 @@ python generate_cards.py
 python generate_cards.py my_config.json
 ```
 
-**📖 [Full PDF Generator Documentation →](PDF_GENERATOR_README.md)**
+**📖 [Full PDF Generator Documentation →](pdf-generator/)**
 
 ---
 
@@ -145,8 +151,8 @@ python generate_cards.py my_config.json
 
 | Document | Description |
 |----------|-------------|
-| [AI_PIPELINE_README.md](ai-pipeline/AI_PIPELINE_README.md) | AI processing setup and usage |
-| [PDF_GENERATOR_README.md](PDF_GENERATOR_README.md) | PDF generation configuration |
+| [ai-pipeline/](ai-pipeline/) | AI processing setup and usage |
+| [pdf-generator/](pdf-generator/) | PDF generation configuration |
 | [WORKFLOW_EVOLUTION.md](ai-pipeline/WORKFLOW_EVOLUTION.md) | 24 workflow iterations history |
 | [PROJECT_TECHNICAL_DOCUMENTATION.md](PROJECT_TECHNICAL_DOCUMENTATION.md) | Complete technical specifications |
 
@@ -204,7 +210,7 @@ cd ai-pipeline
 bash runpod_setup.sh
 
 # PDF Generator setup
-cd ..
+cd ../pdf-generator
 pip install -r requirements.txt
 ```
 
