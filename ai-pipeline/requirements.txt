@@ -1,0 +1,6 @@
+requests==2.31.0
+Pillow==10.2.0
+websocket-client==1.7.0
+
+# Alternative: Replicate API (simpler, no local setup)
+replicate==0.25.1

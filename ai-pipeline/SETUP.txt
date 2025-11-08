@@ -1,0 +1,66 @@
+COMFYUI FACE SWAP SETUP - RUNPOD DEPLOYMENT
+============================================
+
+COST ESTIMATE (10,000 images):
+- GPU: RTX 4090 @ $0.69/hour
+- Processing time: ~8 seconds/image
+- Total cost: ~$15-20 for 10,000 images ($0.0015-0.002 per image)
+
+DEPLOYMENT OPTIONS:
+
+1. RUNPOD (Recommended for 10k+ images)
+   - Sign up: https://runpod.io
+   - Select: RTX 4090 or RTX 3090 pod
+   - Storage: 50GB minimum
+   - Run: bash runpod_setup.sh
+   - Start: cd /workspace/ComfyUI && python main.py --listen 0.0.0.0 --port 8188
+   - Access: Use pod's public IP:8188
+
+2. LOCAL SETUP (Testing only)
+   - Install ComfyUI: git clone https://github.com/comfyanonymous/ComfyUI.git
+   - Install deps: pip install -r requirements.txt
+   - Download models manually (see runpod_setup.sh for URLs)
+   - Start: python main.py
+
+USAGE:
+
+1. Single Image:
+   python comfyui_api.py
+
+2. Batch Processing:
+   python batch_processor.py
+
+3. Custom Integration:
+   from comfyui_api import ComfyUIFaceSwapAPI
+   api = ComfyUIFaceSwapAPI("http://runpod-ip:8188")
+   api.generate_face_swap("source.png", "target.png", "output.png")
+
+REQUIRED MODELS (auto-downloaded by setup script):
+- realisticVisionV60B1_v51VAE.safetensors (~2GB)
+- ip-adapter-faceid-plusv2_sd15.bin (~350MB)
+- control_v11p_sd15_openpose.pth (~1.4GB)
+- InsightFace buffalo_l models (~400MB)
+
+CUSTOM NODES INSTALLED:
+- ComfyUI-Manager
+- ComfyUI_IPAdapter_plus
+- ComfyUI-InstantID
+- ComfyUI-Impact-Pack
+
+OPTIMIZATION TIPS:
+- Use 4 parallel workers for RTX 4090
+- Batch size 1 for consistent quality
+- Style strength 0.85 for best face-body blend
+- 25 steps sufficient for illustration style
+
+TROUBLESHOOTING:
+- Out of memory: Reduce max_workers in batch_processor.py
+- Slow processing: Check GPU utilization, may need better GPU tier
+- Face detection fails: Ensure source image has clear frontal face
+- Style mismatch: Adjust style_strength (0.7-0.95 range)
+
+API ENDPOINTS:
+- Upload: POST /upload/image
+- Queue: POST /prompt
+- History: GET /history/{prompt_id}
+- Download: GET /view?filename={name}
