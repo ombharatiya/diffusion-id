@@ -2,24 +2,24 @@
 
 **Part of DiffusionID Project**
 
-Adds colored borders around the subject (non-transparent area) in transparent PNG images. Automatically detects the silhouette boundary and draws a configurable border around it.
+Adds colored borders around the subject silhouette in transparent PNG images. Automatically detects the silhouette boundary and draws a configurable border that follows the actual contour of the subject.
 
 ## Visual Examples
 
 | Input (transparent PNG) | Output (with red border) |
 |:-----------------------:|:------------------------:|
 | ![Input](examples/input_transparent.png) | ![Output](examples/output_bordered.png) |
-| Transparent background, no border | Red 2px border around subject |
+| Transparent background, no border | Red 2px border around subject silhouette |
 
 **Sample images available in:** `examples/` directory
 
 ## Features
 
-- **Automatic subject detection** using transparency analysis
+- **Silhouette contour following** using morphological dilation
 - **Configurable border width** (default: 2px)
 - **Customizable border color** (default: red #FF0000)
 - **Batch processing** for multiple images
-- **Precise boundary detection** around subject silhouette
+- **Precise boundary detection** around subject shape
 - **Preserves transparency** in output
 
 ## Installation
@@ -69,28 +69,33 @@ python add_border.py -d input/ -o output/ -c "#FF0000" -w 3
 
 ## How It Works
 
-### Subject Detection Algorithm
+### Silhouette Border Algorithm
 
 1. **Load PNG image** with transparency
-2. **Analyze alpha channel** to find non-transparent pixels
-3. **Calculate bounding box** around all non-transparent areas (the subject)
-4. **Draw border** around the bounding box with specified color and width
-5. **Save result** as PNG with transparency preserved
+2. **Analyze alpha channel** to create a binary mask of the subject
+3. **Dilate the mask** using morphological dilation to expand subject pixels outward
+4. **Calculate border pixels** by subtracting original mask from dilated mask
+5. **Apply border color** to border pixels while preserving the original subject
+6. **Save result** as PNG with transparency preserved
 
-### Border Drawing
+### Border Drawing Technique
 
-The border is drawn **around the subject's bounding box**, not around every pixel edge. This creates a clean rectangular frame around the silhouette.
+The border follows the **exact contour/silhouette** of the subject using morphological dilation. This creates a border that wraps around the actual shape of the person, not just a rectangular box.
 
+**How dilation works:**
+- Each iteration expands the subject by 1 pixel in all directions
+- The number of iterations equals the border width
+- Border pixels are the difference between dilated and original masks
+
+**Visual representation:**
 ```
-┌─────────────────┐
-│                 │
-│   ┌─────────┐   │  ← Image boundaries
-│   │ Subject │   │
-│   │  with   │   │  ← Subject (non-transparent)
-│   │ Border  │   │
-│   └─────────┘   │  ← Border (configurable width & color)
-│                 │
-└─────────────────┘
+Original subject → Dilated by 2px → Border is the difference
+
+   ●●●●              ▓▓▓▓▓▓           ▓▓▓▓▓▓
+  ●●●●●●            ▓▓●●●●●●▓          ▓▓░░░░▓▓
+ ●●●●●●●●          ▓▓●●●●●●●●▓        ▓▓░░░░░░▓▓
+●●●●●●●●●●        ▓▓●●●●●●●●●●▓      ▓▓░░░░░░░░▓▓
+                                    (border pixels)
 ```
 
 ## Supported Formats
@@ -146,7 +151,7 @@ This module is designed to work seamlessly with the background-removal module:
 cd background-removal
 python remove_background.py -d ../input-sample/images -o output/
 
-# Step 2: Add red border to subjects
+# Step 2: Add red border around silhouettes
 cd ../border-addition
 python add_border.py -d ../background-removal/output -o output/
 ```
@@ -172,10 +177,11 @@ Use any valid 6-digit hex color code for custom colors.
 
 ## Technical Details
 
-- **Algorithm:** Alpha channel analysis + bounding box calculation
-- **Precision:** Pixel-perfect boundary detection
-- **Performance:** Optimized with NumPy for fast processing
+- **Algorithm:** Morphological dilation with binary masks (scipy.ndimage)
+- **Precision:** Pixel-perfect silhouette contour following
+- **Performance:** Optimized with NumPy array operations
 - **Transparency:** Fully preserved in output
+- **Border style:** Follows actual subject shape, not rectangular bounding box
 
 ## Troubleshooting
 
@@ -188,9 +194,9 @@ Use any valid 6-digit hex color code for custom colors.
 - **Adjust width:** Use `-w` parameter (1-100)
 - **Preview first:** Test on single image before batch processing
 
-### Border cuts off subject
-- **This shouldn't happen:** Border is drawn outside bounding box
-- **Check input:** Ensure subject isn't touching image edges
+### Border clips at edges
+- **Image boundaries:** Border may be clipped if subject touches image edges
+- **Solution:** Add padding to input image before processing
 
 ### Input not transparent
 - **Run background removal first:** Use background-removal module
@@ -201,6 +207,7 @@ Use any valid 6-digit hex color code for custom colors.
 - Python 3.7+
 - Pillow (PIL) 10.0.0+
 - NumPy 1.24.0+
+- SciPy 1.10.0+
 
 ## Project Structure
 
@@ -228,3 +235,4 @@ Batch processing is highly efficient for directories with many images.
 **Status:** Production-Ready
 **Default Border Color:** #FF0000 (Red)
 **Default Border Width:** 2px (Configurable)
+**Border Type:** Silhouette contour following

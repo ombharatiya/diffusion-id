@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 """
 Border Addition Module
-Adds colored borders around the subject (non-transparent area) in transparent PNG images.
+Adds colored borders around the subject silhouette in transparent PNG images.
 """
 
 import os
 import sys
 import argparse
 from pathlib import Path
-from PIL import Image, ImageDraw
+from PIL import Image
 import numpy as np
+from scipy.ndimage import binary_dilation
 
 
 def hex_to_rgb(hex_color):
@@ -18,47 +19,9 @@ def hex_to_rgb(hex_color):
     return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
 
 
-def get_subject_bbox(img):
-    """
-    Get bounding box of non-transparent pixels (the subject).
-
-    Args:
-        img: PIL Image in RGBA mode
-
-    Returns:
-        tuple: (left, top, right, bottom) or None if no non-transparent pixels found
-    """
-    # Convert to numpy array
-    data = np.array(img)
-
-    # Get alpha channel
-    alpha = data[:, :, 3]
-
-    # Find non-transparent pixels (alpha > 0)
-    non_transparent = alpha > 0
-
-    # Find rows and columns with non-transparent pixels
-    rows = np.any(non_transparent, axis=1)
-    cols = np.any(non_transparent, axis=0)
-
-    if not rows.any() or not cols.any():
-        return None
-
-    # Get bounding box
-    row_indices = np.where(rows)[0]
-    col_indices = np.where(cols)[0]
-
-    top = row_indices[0]
-    bottom = row_indices[-1]
-    left = col_indices[0]
-    right = col_indices[-1]
-
-    return (left, top, right, bottom)
-
-
 def add_border_to_subject(input_path, output_path, border_color='#FF0000', border_width=2):
     """
-    Add border around the subject (non-transparent area) in transparent PNG.
+    Add border around the subject silhouette (following the contour) in transparent PNG.
 
     Args:
         input_path (str): Path to input PNG file (with transparency)
@@ -78,42 +41,44 @@ def add_border_to_subject(input_path, output_path, border_color='#FF0000', borde
             print(f"⚠ Warning: {input_path} is not in RGBA mode. Converting...")
             img = img.convert('RGBA')
 
-        # Get bounding box of subject
-        bbox = get_subject_bbox(img)
+        # Convert to numpy array
+        data = np.array(img)
 
-        if bbox is None:
+        # Get alpha channel
+        alpha = data[:, :, 3]
+
+        # Create binary mask of non-transparent pixels (subject)
+        subject_mask = alpha > 0
+
+        if not subject_mask.any():
             print(f"⚠ Warning: No non-transparent pixels found in {input_path}")
             # Still save the image (no border added)
             os.makedirs(os.path.dirname(output_path) if os.path.dirname(output_path) else '.', exist_ok=True)
             img.save(output_path, 'PNG')
             return True
 
-        # Create a copy to draw on
-        result = img.copy()
-        draw = ImageDraw.Draw(result)
+        # Dilate the subject mask to expand it by border_width pixels
+        # Use a circular structuring element for smooth borders
+        structure = np.ones((3, 3), dtype=bool)
+        dilated_mask = subject_mask.copy()
+        for _ in range(border_width):
+            dilated_mask = binary_dilation(dilated_mask, structure=structure)
 
-        # Convert border color to RGB
+        # Border pixels are: dilated - original
+        border_mask = dilated_mask & ~subject_mask
+
+        # Create output image starting from input
+        result_data = data.copy()
+
+        # Convert border color to RGBA
         border_rgb = hex_to_rgb(border_color)
+        border_rgba = border_rgb + (255,)
 
-        # Draw border around the bounding box
-        left, top, right, bottom = bbox
+        # Apply border color to border pixels
+        result_data[border_mask] = border_rgba
 
-        # Draw multiple rectangles for border width
-        for i in range(border_width):
-            # Outer rectangle coordinates
-            x0 = left - i
-            y0 = top - i
-            x1 = right + i
-            y1 = bottom + i
-
-            # Ensure coordinates are within image bounds
-            x0 = max(0, x0)
-            y0 = max(0, y0)
-            x1 = min(img.width - 1, x1)
-            y1 = min(img.height - 1, y1)
-
-            # Draw rectangle outline
-            draw.rectangle([x0, y0, x1, y1], outline=border_rgb + (255,), width=1)
+        # Convert back to PIL Image
+        result = Image.fromarray(result_data, 'RGBA')
 
         # Ensure output directory exists
         os.makedirs(os.path.dirname(output_path) if os.path.dirname(output_path) else '.', exist_ok=True)
@@ -121,14 +86,18 @@ def add_border_to_subject(input_path, output_path, border_color='#FF0000', borde
         # Save as PNG
         result.save(output_path, 'PNG')
 
+        border_pixel_count = np.sum(border_mask)
         print(f"✓ Successfully processed: {input_path}")
-        print(f"  → Border: {border_color} ({border_width}px) around subject at bbox {bbox}")
+        print(f"  → Border: {border_color} ({border_width}px) around subject silhouette")
+        print(f"  → Border pixels added: {border_pixel_count}")
         print(f"  → Saved to: {output_path}")
 
         return True
 
     except Exception as e:
         print(f"✗ Error processing {input_path}: {str(e)}", file=sys.stderr)
+        import traceback
+        traceback.print_exc()
         return False
 
 
@@ -177,7 +146,7 @@ def process_directory(input_dir, output_dir, border_color='#FF0000', border_widt
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Add colored borders around subjects in transparent PNG images.',
+        description='Add colored borders around subject silhouettes in transparent PNG images.',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
