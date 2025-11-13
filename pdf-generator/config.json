@@ -16,16 +16,16 @@
   "top_margin_pt": 1,
   
   "_comment_sections": "Section heights (from top to bottom)",
-  "photo_section_height_pt": 320,
+  "photo_section_height_pt": 310,
   "name_box_height_pt_short": 20,
   "name_box_height_pt_long": 30,
-  "qr_section_height_pt": 120,
+  "qr_section_height_pt": 115,
   "gap_before_message_pt": 0,
   "message_box_height_pt": 30,
   "bottom_box_height_pt": 20,
   
   "_comment_elements": "Element sizes and styling",
-  "qr_code_size_pt": 110,
+  "qr_code_size_pt": 105,
   "name_font_size_pt_short": 12,
   "name_font_size_pt_long": 10,
   "message_font_size_pt": 10,
@@ -50,5 +50,5 @@
   "name_box_horizontal_margin_pt": 25,
   "bottom_box_horizontal_margin_pt": 25,
   
-  "_comment_calculated": "Content width = page_width_pt - (2 * horizontal_padding_pt) = 196pt"
+  "_comment_calculated": "Content width = page_width_pt - (2 * horizontal_padding_pt) = 206pt | Height calculation: top_padding(1) + top_margin(1) + photo(310) + name(20/30) + qr(115) + message(30) + bottom_box(20) + bottom_padding(3) = 500/510pt (fits in 504pt page)"
 }
