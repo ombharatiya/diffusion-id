@@ -5,7 +5,8 @@
   "message_text": "Know more about HPV related Cancer &<br/>its prevention in females and males.",
 
   "_comment_background": "Background color: hex (e.g. '#8DC5FE') for PDF/PNG, or 'transparent' for PNG only",
-  "background_color": "#8DC5FE",
+  "background_color": "transparent",
+  "_comment_background_color": "#8DC5FE",
   
   "_comment_page": "Page dimensions (1 inch = 72 points)",
   "page_width_pt": 216,
