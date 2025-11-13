@@ -44,3 +44,9 @@ config_local.json
 # AI Pipeline
 ai-pipeline/outputs/
 ai-pipeline/test_output*.png
+
+# Background Removal
+background-removal/output/
+
+# Border Addition
+border-addition/output/

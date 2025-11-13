@@ -1,0 +1,17 @@
+# DiffusionID Project - Combined Requirements
+
+# Core image processing (used by multiple modules)
+Pillow>=10.0.0
+numpy>=1.24.0
+
+# AI Pipeline dependencies
+requests>=2.31.0
+websocket-client>=1.7.0
+replicate>=0.25.1
+
+# PDF Generator dependencies
+reportlab>=4.0.7
+
+# Background Removal dependencies (Pillow, numpy - already listed above)
+
+# Border Addition dependencies (Pillow, numpy - already listed above)
