@@ -17,6 +17,7 @@ Removes specific color backgrounds from images and creates transparent PNGs. Des
 
 - **Color-based background removal** with configurable tolerance
 - **Multiple colors support** - remove multiple background colors in one pass
+- **Configuration file support** - set defaults via config.json
 - **Batch processing** for multiple images
 - **Transparent PNG output** with preserved image quality
 - **Flexible color matching** using Euclidean distance algorithm
@@ -32,6 +33,58 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 # Install dependencies
 pip install -r requirements.txt
 ```
+
+## Configuration
+
+The module supports configuration via `config.json` file for setting default values. CLI arguments always override config values.
+
+### Creating Configuration File
+
+1. **Copy example config:**
+   ```bash
+   cp config.example.json config.json
+   ```
+
+2. **Edit config.json:**
+   ```json
+   {
+     "background_colors": ["#8DC5FE"],
+     "tolerance": 30,
+     "output_directory": "output"
+   }
+   ```
+
+### Configuration Options
+
+| Option | Type | Description | Default |
+|--------|------|-------------|---------|
+| `background_colors` | Array | List of background colors to remove | `["#8DC5FE"]` |
+| `tolerance` | Integer | Color matching tolerance (0-255) | `30` |
+| `output_directory` | String | Default output directory for batch processing | `"output"` |
+
+### Presets
+
+The config includes helpful presets for common scenarios:
+- **flat_background**: Tolerance 30 for solid backgrounds
+- **gradient_background**: Tolerance 50 for gradients
+- **blue_and_white**: Remove both #8DC5FE and #FFFFFF
+- **high_precision**: Tolerance 15 for precise matching
+
+### Using Configuration
+
+```bash
+# Use default config.json in module directory
+python remove_background.py -d images/ -o output/
+
+# Use custom config file
+python remove_background.py --config my_config.json -d images/ -o output/
+
+# Override config values with CLI arguments
+python remove_background.py -d images/ -o output/ -t 50  # Override tolerance
+python remove_background.py -d images/ -o output/ -c "#FFFFFF"  # Override colors
+```
+
+**Priority:** CLI arguments > config.json > hardcoded defaults
 
 ## Usage
 
@@ -206,6 +259,8 @@ python border-addition/add_border.py -d temp/ -o final/
 ```
 background-removal/
 ├── remove_background.py    # Main processing script
+├── config.json            # Configuration file (user-created)
+├── config.example.json    # Example configuration with presets
 ├── requirements.txt        # Python dependencies
 ├── README.md              # This file
 └── examples/              # Sample input/output images

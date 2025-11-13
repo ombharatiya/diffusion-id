@@ -1,0 +1,34 @@
+{
+  "_comment_info": "Background Removal Module Configuration",
+  "_comment_usage": "CLI arguments override these defaults. Use: python remove_background.py --config custom_config.json",
+
+  "_comment_colors": "Background colors to remove (hex format)",
+  "background_colors": ["#8DC5FE"],
+
+  "_comment_tolerance": "Color matching tolerance (0-255). Use 30 for flat backgrounds, 45-60 for gradients",
+  "tolerance": 30,
+
+  "_comment_output": "Default output directory for batch processing",
+  "output_directory": "output",
+
+  "_comment_presets": "Preset configurations for common scenarios",
+  "presets": {
+    "flat_background": {
+      "tolerance": 30,
+      "description": "For images with solid, uniform backgrounds"
+    },
+    "gradient_background": {
+      "tolerance": 50,
+      "description": "For images with gradient or varying background colors"
+    },
+    "blue_and_white": {
+      "background_colors": ["#8DC5FE", "#FFFFFF"],
+      "tolerance": 35,
+      "description": "Remove both blue and white backgrounds"
+    },
+    "high_precision": {
+      "tolerance": 15,
+      "description": "Maximum precision, minimal color variation matching"
+    }
+  }
+}

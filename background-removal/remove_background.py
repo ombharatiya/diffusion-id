@@ -8,9 +8,43 @@ Supports single or multiple background colors.
 import os
 import sys
 import argparse
+import json
 from pathlib import Path
 from PIL import Image
 import numpy as np
+
+
+def load_config(config_path='config.json'):
+    """
+    Load configuration from JSON file.
+
+    Args:
+        config_path (str): Path to config file
+
+    Returns:
+        dict: Configuration dictionary or empty dict if file doesn't exist
+    """
+    # Get script directory to find config.json
+    script_dir = Path(__file__).parent
+
+    # Check if config_path is absolute or relative
+    if not Path(config_path).is_absolute():
+        config_path = script_dir / config_path
+
+    if not os.path.exists(config_path):
+        return {}
+
+    try:
+        with open(config_path, 'r') as f:
+            config = json.load(f)
+            # Filter out comment keys
+            return {k: v for k, v in config.items() if not k.startswith('_')}
+    except json.JSONDecodeError as e:
+        print(f"Warning: Error parsing config file {config_path}: {e}", file=sys.stderr)
+        return {}
+    except Exception as e:
+        print(f"Warning: Error loading config file {config_path}: {e}", file=sys.stderr)
+        return {}
 
 
 def hex_to_rgb(hex_color):
@@ -178,8 +212,15 @@ Examples:
 
   # Batch processing with multiple colors
   python remove_background.py -d images/ -o output/ -c "#8DC5FE" -c "#FFFFFF" -t 40
+
+  # Use custom config file
+  python remove_background.py --config custom_config.json -d images/ -o output/
         """
     )
+
+    # Config file
+    parser.add_argument('--config', default='config.json',
+                        help='Path to config file (default: config.json)')
 
     # Input options (mutually exclusive)
     input_group = parser.add_mutually_exclusive_group(required=True)
@@ -187,22 +228,36 @@ Examples:
     input_group.add_argument('-d', '--directory', help='Input directory containing images')
 
     # Output
-    parser.add_argument('-o', '--output', required=True,
+    parser.add_argument('-o', '--output',
                         help='Output file path (for single image) or directory (for batch)')
 
     # Background color (can be specified multiple times)
     parser.add_argument('-c', '--color', action='append', dest='colors',
-                        help='Background color to remove in hex format (can specify multiple times). Default: #8DC5FE')
+                        help='Background color to remove in hex format (can specify multiple times)')
 
     # Tolerance
-    parser.add_argument('-t', '--tolerance', type=int, default=30,
-                        help='Color matching tolerance 0-255 (default: 30)')
+    parser.add_argument('-t', '--tolerance', type=int,
+                        help='Color matching tolerance 0-255')
 
     args = parser.parse_args()
 
-    # Handle default color
+    # Load config file
+    config = load_config(args.config)
+
+    # Apply config defaults, CLI args override
     if args.colors is None:
-        args.colors = ['#8DC5FE']
+        args.colors = config.get('background_colors', ['#8DC5FE'])
+
+    if args.tolerance is None:
+        args.tolerance = config.get('tolerance', 30)
+
+    if args.output is None:
+        # Use config output_directory for batch mode
+        if args.directory:
+            args.output = config.get('output_directory', 'output')
+        else:
+            print("Error: --output is required for single file mode", file=sys.stderr)
+            sys.exit(1)
 
     # Validate tolerance
     if not 0 <= args.tolerance <= 255:

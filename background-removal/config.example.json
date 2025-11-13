@@ -1,0 +1,16 @@
+{
+  "_comment_info": "Example configuration - copy to config.json and customize",
+
+  "background_colors": ["#8DC5FE"],
+  "tolerance": 30,
+  "output_directory": "output",
+
+  "_comment_multiple_colors": "To remove multiple colors, add them to the array:",
+  "_example_multiple": ["#8DC5FE", "#FFFFFF", "#000000"],
+
+  "_comment_tolerance_guide": "Tolerance values:",
+  "_tolerance_low": "15-20: High precision, only exact color matches",
+  "_tolerance_medium": "30-40: Balanced, good for flat backgrounds",
+  "_tolerance_high": "45-60: For gradient backgrounds with color variations",
+  "_tolerance_very_high": "60+: Aggressive removal, may affect foreground"
+}
