@@ -161,6 +161,32 @@ python border-addition/add_border.py -d temp/ -o final/
 - **Increase tolerance:** Try `-t 40` or `-t 50`
 - **Check color code:** Verify the exact hex color of your background
 
+### Gradient backgrounds / Color shades at edges
+**Problem:** Background has the main color (e.g., #8DC5FE) but also slight variations at corners/edges (e.g., #8CC5FD, #8EC5FF). These leftover pixels become very visible when borders are added.
+
+**Why this happens:**
+- Image compression creates color gradients
+- Anti-aliasing at edges produces intermediate colors
+- Lighting/shadows create subtle color variations
+
+**Solutions:**
+1. **Increase tolerance (Recommended):**
+   ```bash
+   # Try tolerance 40-50 for gradient backgrounds
+   python remove_background.py -i input.png -o output.png -t 45
+
+   # For strong gradients, try up to 60
+   python remove_background.py -i input.png -o output.png -t 60
+   ```
+
+2. **Add multiple similar colors:**
+   ```bash
+   # Specify main color and lighter/darker variations
+   python remove_background.py -i input.png -o output.png -c "#8DC5FE" -c "#8CC5FD" -c "#8EC6FF" -t 30
+   ```
+
+**Tip:** Start with `-t 45` for gradient backgrounds. If artifacts remain, increase by 5-10. Monitor the output to ensure foreground isn't affected.
+
 ### Foreground being removed
 - **Decrease tolerance:** Try `-t 20` or `-t 15`
 - **Color similarity:** If foreground has colors similar to background, manual editing may be needed
@@ -191,4 +217,4 @@ background-removal/
 
 **Status:** Production-Ready
 **Default Background Color:** #8DC5FE (Light Blue)
-**Recommended Tolerance:** 30
+**Recommended Tolerance:** 30 (flat backgrounds), 45-60 (gradient backgrounds)
