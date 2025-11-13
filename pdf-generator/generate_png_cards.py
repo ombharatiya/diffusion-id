@@ -339,9 +339,20 @@ class PNGCardGenerator:
             y_message = y_qr + qr_height + gap_before_msg
             y_bottom_box = y_message + message_height
 
-            # Create canvas with background color
-            bg_color = self._hex_to_rgb(cfg['background_color'])
-            canvas = Image.new('RGB', (page_width, page_height), bg_color)
+            # Create canvas with background color (or transparent)
+            bg_color_str = cfg.get('background_color', '#8DC5FE')
+            use_transparent = bg_color_str.lower() in ['transparent', '', 'none']
+
+            if use_transparent:
+                # Create transparent background (RGBA with alpha=0)
+                canvas = Image.new('RGBA', (page_width, page_height), (0, 0, 0, 0))
+                print(f"  Background: Transparent")
+            else:
+                # Create with solid color background
+                bg_color = self._hex_to_rgb(bg_color_str)
+                canvas = Image.new('RGBA', (page_width, page_height), bg_color + (255,))
+                print(f"  Background: {bg_color_str}")
+
             draw = ImageDraw.Draw(canvas)
 
             # 1. Draw photo section

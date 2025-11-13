@@ -53,7 +53,7 @@ Edit `config.json` to customize all aspects of the PDF layout. All dimensions ar
 - `input_csv`: Path to CSV file with person data
 - `qr_code_path`: Path to QR code image
 - `message_text`: Custom message (supports `<br/>` for line breaks)
-- `background_color`: Background color (hex, e.g., `#8DC5FE`)
+- `background_color`: Background color (hex, e.g., `#8DC5FE`) or `"transparent"` for PNG with transparent background
 
 ## Usage
 
@@ -78,6 +78,8 @@ python generate_png_cards.py my_config.json
 ```
 
 **Note:** PNG generation uses the same `config.json` configuration as PDF generation. The PNG output is rendered at 4x resolution (288 DPI equivalent) for high-quality print output.
+
+**Transparent Background:** To generate PNGs with transparent background instead of colored background, set `background_color` to `"transparent"` in `config.json`. This is useful when you want to overlay the cards on different backgrounds or for further image processing.
 
 ### PNG to PDF Conversion
 
@@ -161,7 +163,11 @@ Files are saved to the output directory with sanitized filenames:
 **PNG-to-PDF converted output:**
 - `rupali_chandane_pdf.pdf` (converted from PNG with configurable background/padding)
 
-**Sample outputs** are available in the `samples/` directory for reference.
+**Sample outputs** are available in the `samples/` directory for reference:
+- `rupali_chandane.png` - PNG with colored background
+- `rupali_chandane_transparent.png` - PNG with transparent background (RGBA)
+- `sample_direct_pdf.pdf` - PDF generated directly from card generator
+- `sample_converted_pdf.pdf` - PDF converted from PNG
 
 ## Example Configuration
 
