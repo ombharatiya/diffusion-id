@@ -1,0 +1,22 @@
+{
+  "_comment_info": "Example configuration - copy to config.json and customize",
+
+  "border_color": "#FF0000",
+  "border_width": 2,
+  "output_directory": "output",
+
+  "_comment_colors": "Common border colors:",
+  "_color_red": "#FF0000",
+  "_color_blue": "#0000FF",
+  "_color_green": "#00FF00",
+  "_color_black": "#000000",
+  "_color_white": "#FFFFFF",
+  "_color_orange": "#FF8800",
+  "_color_purple": "#8800FF",
+
+  "_comment_width_guide": "Border width recommendations:",
+  "_width_subtle": "1px: Subtle outline",
+  "_width_standard": "2-3px: Standard visible border (recommended)",
+  "_width_prominent": "5-10px: Prominent, thick border",
+  "_width_dramatic": "10+px: Dramatic effect"
+}

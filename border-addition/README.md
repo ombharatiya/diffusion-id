@@ -18,6 +18,7 @@ Adds colored borders around the subject silhouette in transparent PNG images. Au
 - **Silhouette contour following** using morphological dilation
 - **Configurable border width** (default: 2px)
 - **Customizable border color** (default: red #FF0000)
+- **Configuration file support** - set defaults via config.json
 - **Batch processing** for multiple images
 - **Precise boundary detection** around subject shape
 - **Preserves transparency** in output
@@ -32,6 +33,60 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 # Install dependencies
 pip install -r requirements.txt
 ```
+
+## Configuration
+
+The module supports configuration via `config.json` file for setting default values. CLI arguments always override config values.
+
+### Creating Configuration File
+
+1. **Copy example config:**
+   ```bash
+   cp config.example.json config.json
+   ```
+
+2. **Edit config.json:**
+   ```json
+   {
+     "border_color": "#FF0000",
+     "border_width": 2,
+     "output_directory": "output"
+   }
+   ```
+
+### Configuration Options
+
+| Option | Type | Description | Default |
+|--------|------|-------------|---------|
+| `border_color` | String | Border color in hex format | `"#FF0000"` (red) |
+| `border_width` | Integer | Border width in pixels (1-100) | `2` |
+| `output_directory` | String | Default output directory for batch processing | `"output"` |
+
+### Presets
+
+The config includes helpful presets for common scenarios:
+- **thin_red**: 1px red border
+- **default_red**: 2px red border (default)
+- **thick_red**: 5px red border
+- **black_border**: 2px black border for light backgrounds
+- **white_border**: 3px white border for dark backgrounds
+- **blue_border**: 2px blue border
+
+### Using Configuration
+
+```bash
+# Use default config.json in module directory
+python add_border.py -d images/ -o output/
+
+# Use custom config file
+python add_border.py --config my_config.json -d images/ -o output/
+
+# Override config values with CLI arguments
+python add_border.py -d images/ -o output/ -w 5  # Override width
+python add_border.py -d images/ -o output/ -c "#0000FF"  # Override color
+```
+
+**Priority:** CLI arguments > config.json > hardcoded defaults
 
 ## Usage
 
@@ -214,6 +269,8 @@ Use any valid 6-digit hex color code for custom colors.
 ```
 border-addition/
 ├── add_border.py       # Main processing script
+├── config.json         # Configuration file (user-created)
+├── config.example.json # Example configuration with presets
 ├── requirements.txt    # Python dependencies
 ├── README.md          # This file
 └── examples/          # Sample input/output images

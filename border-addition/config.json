@@ -1,0 +1,45 @@
+{
+  "_comment_info": "Border Addition Module Configuration",
+  "_comment_usage": "CLI arguments override these defaults. Use: python add_border.py --config custom_config.json",
+
+  "_comment_border": "Border color and width settings",
+  "border_color": "#FF0000",
+  "border_width": 2,
+
+  "_comment_output": "Default output directory for batch processing",
+  "output_directory": "output",
+
+  "_comment_presets": "Preset configurations for common scenarios",
+  "presets": {
+    "thin_red": {
+      "border_color": "#FF0000",
+      "border_width": 1,
+      "description": "Thin red border (1px)"
+    },
+    "default_red": {
+      "border_color": "#FF0000",
+      "border_width": 2,
+      "description": "Default red border (2px)"
+    },
+    "thick_red": {
+      "border_color": "#FF0000",
+      "border_width": 5,
+      "description": "Thick red border (5px)"
+    },
+    "black_border": {
+      "border_color": "#000000",
+      "border_width": 2,
+      "description": "Black border for light backgrounds"
+    },
+    "white_border": {
+      "border_color": "#FFFFFF",
+      "border_width": 3,
+      "description": "White border for dark backgrounds"
+    },
+    "blue_border": {
+      "border_color": "#0000FF",
+      "border_width": 2,
+      "description": "Blue border"
+    }
+  }
+}

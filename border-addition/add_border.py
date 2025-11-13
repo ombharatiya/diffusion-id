@@ -7,10 +7,44 @@ Adds colored borders around the subject silhouette in transparent PNG images.
 import os
 import sys
 import argparse
+import json
 from pathlib import Path
 from PIL import Image
 import numpy as np
 from scipy.ndimage import binary_dilation
+
+
+def load_config(config_path='config.json'):
+    """
+    Load configuration from JSON file.
+
+    Args:
+        config_path (str): Path to config file
+
+    Returns:
+        dict: Configuration dictionary or empty dict if file doesn't exist
+    """
+    # Get script directory to find config.json
+    script_dir = Path(__file__).parent
+
+    # Check if config_path is absolute or relative
+    if not Path(config_path).is_absolute():
+        config_path = script_dir / config_path
+
+    if not os.path.exists(config_path):
+        return {}
+
+    try:
+        with open(config_path, 'r') as f:
+            config = json.load(f)
+            # Filter out comment keys
+            return {k: v for k, v in config.items() if not k.startswith('_')}
+    except json.JSONDecodeError as e:
+        print(f"Warning: Error parsing config file {config_path}: {e}", file=sys.stderr)
+        return {}
+    except Exception as e:
+        print(f"Warning: Error loading config file {config_path}: {e}", file=sys.stderr)
+        return {}
 
 
 def hex_to_rgb(hex_color):
@@ -161,8 +195,15 @@ Examples:
 
   # Thick red border for batch processing
   python add_border.py -d ../background-removal/output -o output/ -w 3
+
+  # Use custom config file
+  python add_border.py --config custom_config.json -d input/ -o output/
         """
     )
+
+    # Config file
+    parser.add_argument('--config', default='config.json',
+                        help='Path to config file (default: config.json)')
 
     # Input options (mutually exclusive)
     input_group = parser.add_mutually_exclusive_group(required=True)
@@ -170,18 +211,36 @@ Examples:
     input_group.add_argument('-d', '--directory', help='Input directory containing PNG files')
 
     # Output
-    parser.add_argument('-o', '--output', required=True,
+    parser.add_argument('-o', '--output',
                         help='Output file path (for single image) or directory (for batch)')
 
     # Border color
-    parser.add_argument('-c', '--color', default='#FF0000',
-                        help='Border color in hex format (default: #FF0000 - red)')
+    parser.add_argument('-c', '--color',
+                        help='Border color in hex format')
 
     # Border width
-    parser.add_argument('-w', '--width', type=int, default=2,
-                        help='Border width in pixels (default: 2)')
+    parser.add_argument('-w', '--width', type=int,
+                        help='Border width in pixels (1-100)')
 
     args = parser.parse_args()
+
+    # Load config file
+    config = load_config(args.config)
+
+    # Apply config defaults, CLI args override
+    if args.color is None:
+        args.color = config.get('border_color', '#FF0000')
+
+    if args.width is None:
+        args.width = config.get('border_width', 2)
+
+    if args.output is None:
+        # Use config output_directory for batch mode
+        if args.directory:
+            args.output = config.get('output_directory', 'output')
+        else:
+            print("Error: --output is required for single file mode", file=sys.stderr)
+            sys.exit(1)
 
     # Validate border width
     if args.width < 1 or args.width > 100:
