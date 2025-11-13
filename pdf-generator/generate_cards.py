@@ -318,12 +318,13 @@ class CardGenerator:
             y_top_message = y_top_qr + qr_height + gap_before_msg
             y_top_bottom_box = y_top_message + message_height
             
-            # Convert to ReportLab coordinates (from bottom, accounting for vertical padding)
-            y_photo = page_height - y_top_photo - photo_height
-            y_name = page_height - y_top_name - name_height
-            y_qr = page_height - y_top_qr - qr_height
-            y_message = page_height - y_top_message - message_height
-            y_bottom_box = page_height - y_top_bottom_box - bottom_box_height
+            # Convert to ReportLab coordinates (from bottom, accounting for bottom padding)
+            # ReportLab uses bottom-up coordinates, so bottom_padding lifts everything up
+            y_photo = page_height - y_top_photo - photo_height - bottom_padding
+            y_name = page_height - y_top_name - name_height - bottom_padding
+            y_qr = page_height - y_top_qr - qr_height - bottom_padding
+            y_message = page_height - y_top_message - message_height - bottom_padding
+            y_bottom_box = page_height - y_top_bottom_box - bottom_box_height - bottom_padding
             
             # Create canvas
             c = canvas.Canvas(output_path, pagesize=(page_width, page_height))
