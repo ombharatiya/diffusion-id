@@ -4,6 +4,7 @@
 
   "_comment_colors": "Background colors to remove (hex format)",
   "background_colors": ["#8DC5FE"],
+  "_comment_background_colors": ["#8DC5FE", "#7392B5", "#8AB0DD", "#89B4E8", "#8092AE"],
 
   "_comment_tolerance": "Color matching tolerance (0-255). Use 30 for flat backgrounds, 45-60 for gradients",
   "tolerance": 30,
