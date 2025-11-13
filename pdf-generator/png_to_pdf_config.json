@@ -12,7 +12,8 @@
   "right_padding_pt": 0,
 
   "_comment_background": "Background color (hex format). Set to null or empty string for white background",
-  "background_color": "#8DC5FE",
+  "background_color": "#FFFFFF",
+  "_comment_background_color": "#8DC5FE",
 
   "_comment_image": "Image placement options",
   "center_image": true,
