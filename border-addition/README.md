@@ -4,6 +4,15 @@
 
 Adds colored borders around the subject (non-transparent area) in transparent PNG images. Automatically detects the silhouette boundary and draws a configurable border around it.
 
+## Visual Examples
+
+| Input (transparent PNG) | Output (with red border) |
+|:-----------------------:|:------------------------:|
+| ![Input](examples/input_transparent.png) | ![Output](examples/output_bordered.png) |
+| Transparent background, no border | Red 2px border around subject |
+
+**Sample images available in:** `examples/` directory
+
 ## Features
 
 - **Automatic subject detection** using transparency analysis
@@ -199,7 +208,10 @@ Use any valid 6-digit hex color code for custom colors.
 border-addition/
 ├── add_border.py       # Main processing script
 ├── requirements.txt    # Python dependencies
-└── README.md          # This file
+├── README.md          # This file
+└── examples/          # Sample input/output images
+    ├── input_transparent.png  # Sample transparent PNG input
+    └── output_bordered.png    # Sample output with border
 ```
 
 ## Performance

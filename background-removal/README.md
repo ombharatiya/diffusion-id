@@ -4,6 +4,15 @@
 
 Removes specific color backgrounds from images and creates transparent PNGs. Designed to remove the blue background (#8DC5FE) from doctor caricature images.
 
+## Visual Examples
+
+| Input (with blue background) | Output (transparent background) |
+|:----------------------------:|:--------------------------------:|
+| ![Input](examples/input_sample.png) | ![Output](examples/output_transparent.png) |
+| Original image with #8DC5FE background | Background removed, transparent PNG |
+
+**Sample images available in:** `examples/` directory
+
 ## Features
 
 - **Color-based background removal** with configurable tolerance
@@ -151,7 +160,10 @@ python border-addition/add_border.py -d temp/ -o final/
 background-removal/
 ├── remove_background.py    # Main processing script
 ├── requirements.txt        # Python dependencies
-└── README.md              # This file
+├── README.md              # This file
+└── examples/              # Sample input/output images
+    ├── input_sample.png   # Sample input with blue background
+    └── output_transparent.png  # Sample output with transparency
 ```
 
 ---
