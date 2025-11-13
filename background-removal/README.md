@@ -16,6 +16,7 @@ Removes specific color backgrounds from images and creates transparent PNGs. Des
 ## Features
 
 - **Color-based background removal** with configurable tolerance
+- **Multiple colors support** - remove multiple background colors in one pass
 - **Batch processing** for multiple images
 - **Transparent PNG output** with preserved image quality
 - **Flexible color matching** using Euclidean distance algorithm
@@ -57,10 +58,12 @@ python remove_background.py -d ../input-sample/images -o output/ -c "#8DC5FE" -t
 | `--input` | `-i` | Input image file path | - |
 | `--directory` | `-d` | Input directory containing images | - |
 | `--output` | `-o` | Output file/directory path | Required |
-| `--color` | `-c` | Background color to remove (hex format) | `#8DC5FE` |
+| `--color` | `-c` | Background color to remove (hex format, can specify multiple times) | `#8DC5FE` |
 | `--tolerance` | `-t` | Color matching tolerance (0-255) | `30` |
 
-**Note:** You must specify either `--input` (for single file) OR `--directory` (for batch processing).
+**Notes:**
+- You must specify either `--input` (for single file) OR `--directory` (for batch processing)
+- You can specify `-c` multiple times to remove multiple colors in one pass
 
 ## How It Works
 
@@ -69,10 +72,13 @@ python remove_background.py -d ../input-sample/images -o output/ -c "#8DC5FE" -t
 The module uses Euclidean distance in RGB color space to identify background pixels:
 
 1. **Load image** and convert to RGBA mode
-2. **Calculate color distance** for each pixel from the target background color
+2. **Calculate color distance** for each pixel from the target background color(s)
 3. **Apply tolerance threshold** to determine which pixels are background
-4. **Set alpha channel** to 0 (transparent) for matched pixels
-5. **Save as PNG** with transparency preserved
+4. **Combine masks** when multiple colors are specified (uses logical OR)
+5. **Set alpha channel** to 0 (transparent) for matched pixels
+6. **Save as PNG** with transparency preserved
+
+**Multiple Colors:** When multiple colors are specified, pixels matching ANY of the colors (within tolerance) will be removed.
 
 ### Tolerance Parameter
 
@@ -105,6 +111,21 @@ python remove_background.py -i photo.jpg -o photo_transparent.png -c "#FFFFFF" -
 ```bash
 # Remove blue background with higher tolerance for gradient backgrounds
 python remove_background.py -d images/ -o output/ -c "#8DC5FE" -t 50
+```
+
+### Example 4: Multiple Colors
+```bash
+# Remove both blue and white backgrounds
+python remove_background.py -i photo.png -o output.png -c "#8DC5FE" -c "#FFFFFF"
+
+# Remove three different background colors
+python remove_background.py -i photo.png -o output.png -c "#8DC5FE" -c "#FFFFFF" -c "#000000" -t 25
+```
+
+### Example 5: Batch Processing with Multiple Colors
+```bash
+# Process directory removing both blue and white backgrounds
+python remove_background.py -d images/ -o output/ -c "#8DC5FE" -c "#FFFFFF" -t 35
 ```
 
 ## Output

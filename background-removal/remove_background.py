@@ -2,6 +2,7 @@
 """
 Background Removal Module
 Removes specific color backgrounds from images and creates transparent PNGs.
+Supports single or multiple background colors.
 """
 
 import os
@@ -18,14 +19,14 @@ def hex_to_rgb(hex_color):
     return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
 
 
-def remove_background(input_path, output_path, bg_color='#8DC5FE', tolerance=30):
+def remove_background(input_path, output_path, bg_colors='#8DC5FE', tolerance=30):
     """
-    Remove background color from image and create transparent PNG.
+    Remove background color(s) from image and create transparent PNG.
 
     Args:
         input_path (str): Path to input image
         output_path (str): Path to output PNG file
-        bg_color (str): Background color to remove (hex format, e.g., '#8DC5FE')
+        bg_colors (str or list): Single color or list of background colors to remove (hex format)
         tolerance (int): Color matching tolerance (0-255). Higher values match more similar colors.
 
     Returns:
@@ -42,24 +43,40 @@ def remove_background(input_path, output_path, bg_color='#8DC5FE', tolerance=30)
         # Convert to numpy array for efficient processing
         data = np.array(img)
 
-        # Get RGB values of background color
-        bg_rgb = hex_to_rgb(bg_color)
+        # Normalize bg_colors to list
+        if isinstance(bg_colors, str):
+            bg_colors = [bg_colors]
 
         # Calculate color distance for each pixel
         r, g, b, a = data[:, :, 0], data[:, :, 1], data[:, :, 2], data[:, :, 3]
 
-        # Calculate Euclidean distance from background color
-        color_diff = np.sqrt(
-            (r.astype(int) - bg_rgb[0]) ** 2 +
-            (g.astype(int) - bg_rgb[1]) ** 2 +
-            (b.astype(int) - bg_rgb[2]) ** 2
-        )
+        # Initialize combined mask
+        combined_mask = np.zeros((data.shape[0], data.shape[1]), dtype=bool)
 
-        # Create mask: pixels within tolerance of background color
-        mask = color_diff <= tolerance
+        # Process each background color
+        pixels_removed_per_color = []
+        for bg_color in bg_colors:
+            # Get RGB values of background color
+            bg_rgb = hex_to_rgb(bg_color)
+
+            # Calculate Euclidean distance from background color
+            color_diff = np.sqrt(
+                (r.astype(int) - bg_rgb[0]) ** 2 +
+                (g.astype(int) - bg_rgb[1]) ** 2 +
+                (b.astype(int) - bg_rgb[2]) ** 2
+            )
+
+            # Create mask: pixels within tolerance of background color
+            mask = color_diff <= tolerance
+
+            # Count pixels for this color
+            pixels_removed_per_color.append((bg_color, np.sum(mask)))
+
+            # Combine with overall mask using OR
+            combined_mask = combined_mask | mask
 
         # Set alpha channel to 0 (transparent) for background pixels
-        data[:, :, 3] = np.where(mask, 0, a)
+        data[:, :, 3] = np.where(combined_mask, 0, a)
 
         # Convert back to PIL Image
         result = Image.fromarray(data, 'RGBA')
@@ -71,6 +88,12 @@ def remove_background(input_path, output_path, bg_color='#8DC5FE', tolerance=30)
         result.save(output_path, 'PNG')
 
         print(f"✓ Successfully processed: {input_path}")
+        if len(bg_colors) == 1:
+            print(f"  → Removed color: {bg_colors[0]} ({pixels_removed_per_color[0][1]} pixels)")
+        else:
+            print(f"  → Removed {len(bg_colors)} colors:")
+            for color, pixel_count in pixels_removed_per_color:
+                print(f"     • {color}: {pixel_count} pixels")
         print(f"  → Saved to: {output_path}")
 
         return True
@@ -80,14 +103,14 @@ def remove_background(input_path, output_path, bg_color='#8DC5FE', tolerance=30)
         return False
 
 
-def process_directory(input_dir, output_dir, bg_color='#8DC5FE', tolerance=30):
+def process_directory(input_dir, output_dir, bg_colors='#8DC5FE', tolerance=30):
     """
     Process all images in a directory.
 
     Args:
         input_dir (str): Input directory path
         output_dir (str): Output directory path
-        bg_color (str): Background color to remove
+        bg_colors (str or list): Background color(s) to remove
         tolerance (int): Color matching tolerance
 
     Returns:
@@ -108,8 +131,14 @@ def process_directory(input_dir, output_dir, bg_color='#8DC5FE', tolerance=30):
         print(f"No supported image files found in {input_dir}")
         return 0, 0
 
+    # Normalize bg_colors to list for display
+    color_list = [bg_colors] if isinstance(bg_colors, str) else bg_colors
+
     print(f"\nProcessing {len(image_files)} images from {input_dir}...")
-    print(f"Background color: {bg_color}")
+    if len(color_list) == 1:
+        print(f"Background color: {color_list[0]}")
+    else:
+        print(f"Background colors: {', '.join(color_list)}")
     print(f"Tolerance: {tolerance}")
     print("-" * 60)
 
@@ -120,7 +149,7 @@ def process_directory(input_dir, output_dir, bg_color='#8DC5FE', tolerance=30):
         output_filename = img_file.stem + '_transparent.png'
         output_path = Path(output_dir) / output_filename
 
-        if remove_background(str(img_file), str(output_path), bg_color, tolerance):
+        if remove_background(str(img_file), str(output_path), bg_colors, tolerance):
             success_count += 1
 
     print("-" * 60)
@@ -135,7 +164,7 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Process single image
+  # Process single image with default color
   python remove_background.py -i input.png -o output.png
 
   # Process directory with default settings
@@ -143,6 +172,12 @@ Examples:
 
   # Custom background color and tolerance
   python remove_background.py -i input.png -o output.png -c "#FF0000" -t 50
+
+  # Remove multiple background colors
+  python remove_background.py -i input.png -o output.png -c "#8DC5FE" -c "#FFFFFF" -c "#000000"
+
+  # Batch processing with multiple colors
+  python remove_background.py -d images/ -o output/ -c "#8DC5FE" -c "#FFFFFF" -t 40
         """
     )
 
@@ -155,9 +190,9 @@ Examples:
     parser.add_argument('-o', '--output', required=True,
                         help='Output file path (for single image) or directory (for batch)')
 
-    # Background color
-    parser.add_argument('-c', '--color', default='#8DC5FE',
-                        help='Background color to remove in hex format (default: #8DC5FE)')
+    # Background color (can be specified multiple times)
+    parser.add_argument('-c', '--color', action='append', dest='colors',
+                        help='Background color to remove in hex format (can specify multiple times). Default: #8DC5FE')
 
     # Tolerance
     parser.add_argument('-t', '--tolerance', type=int, default=30,
@@ -165,10 +200,17 @@ Examples:
 
     args = parser.parse_args()
 
+    # Handle default color
+    if args.colors is None:
+        args.colors = ['#8DC5FE']
+
     # Validate tolerance
     if not 0 <= args.tolerance <= 255:
         print("Error: Tolerance must be between 0 and 255", file=sys.stderr)
         sys.exit(1)
+
+    # Use single color if only one, otherwise pass list
+    bg_colors = args.colors[0] if len(args.colors) == 1 else args.colors
 
     # Process based on input type
     if args.input:
@@ -177,7 +219,7 @@ Examples:
             print(f"Error: Input file not found: {args.input}", file=sys.stderr)
             sys.exit(1)
 
-        success = remove_background(args.input, args.output, args.color, args.tolerance)
+        success = remove_background(args.input, args.output, bg_colors, args.tolerance)
         sys.exit(0 if success else 1)
 
     else:
@@ -187,7 +229,7 @@ Examples:
             sys.exit(1)
 
         success_count, total_count = process_directory(
-            args.directory, args.output, args.color, args.tolerance
+            args.directory, args.output, bg_colors, args.tolerance
         )
 
         sys.exit(0 if success_count == total_count else 1)
