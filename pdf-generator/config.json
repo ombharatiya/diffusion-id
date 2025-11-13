@@ -10,7 +10,9 @@
   "page_height_pt": 504,
   
   "_comment_layout": "Layout spacing and margins",
-  "horizontal_padding_pt": 0,
+  "horizontal_padding_pt": 5,
+  "top_padding_pt": 1,
+  "bottom_padding_pt": 3,
   "top_margin_pt": 1,
   
   "_comment_sections": "Section heights (from top to bottom)",
@@ -46,7 +48,7 @@
   "_comment_padding": "Internal padding for text elements",
   "text_horizontal_padding_pt": 2,
   "name_box_horizontal_margin_pt": 25,
-  "bottom_box_horizontal_margin_pt": 0,
+  "bottom_box_horizontal_margin_pt": 25,
   
   "_comment_calculated": "Content width = page_width_pt - (2 * horizontal_padding_pt) = 196pt"
 }

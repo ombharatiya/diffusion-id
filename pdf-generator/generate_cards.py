@@ -80,21 +80,24 @@ class CardGenerator:
     
     def _draw_centered_image(self, c, image_path: str, x: float, y: float, 
                             width: float, height: float, max_width: float, max_height: float):
-        """Draw an image centered within a box, maintaining aspect ratio."""
+        """Draw an image centered horizontally, filling the height, maintaining aspect ratio."""
         img_width, img_height = self._get_image_dimensions(image_path)
         
-        # Calculate scaling to fit within max dimensions
-        scale_w = max_width / img_width
+        # Scale to fill the height completely
         scale_h = max_height / img_height
-        scale = min(scale_w, scale_h)
+        scale_w = max_width / img_width
+        
+        # Use the larger scale to ensure the image fills the section
+        # (may crop horizontally if image is wider than section)
+        scale = max(scale_w, scale_h)
         
         # Calculate final dimensions
         final_width = img_width * scale
         final_height = img_height * scale
         
-        # Center the image
+        # Center horizontally only, align to bottom vertically
         x_offset = x + (width - final_width) / 2
-        y_offset = y + (height - final_height) / 2
+        y_offset = y  # Align to bottom of section (no vertical centering)
         
         c.drawImage(image_path, x_offset, y_offset, 
                    width=final_width, height=final_height, 
@@ -270,13 +273,17 @@ class CardGenerator:
             
             # Layout parameters
             h_padding = cfg['horizontal_padding_pt']
+            top_padding = cfg.get('top_padding_pt', 0)
+            bottom_padding = cfg.get('bottom_padding_pt', 0)
             top_margin = cfg['top_margin_pt']
             text_padding = cfg.get('text_horizontal_padding_pt', 10)
             content_width = page_width - (2 * h_padding)
+            content_height = page_height - top_padding - bottom_padding
             
             # Debug output
             print(f"  Page: {page_width}pt × {page_height}pt")
-            print(f"  Content width: {content_width}pt (padding: {h_padding}pt each side)")
+            print(f"  Content area: {content_width}pt × {content_height}pt")
+            print(f"  Margins - H: {h_padding}pt, Top: {top_padding}pt, Bottom: {bottom_padding}pt")
             print(f"  Text padding: {text_padding}pt each side")
             
             # Determine name box size based on name length
@@ -304,14 +311,14 @@ class CardGenerator:
             print(f"  Name box: {name_height}pt, Font: {name_font_size}pt, Multiline: {name_multiline}")
             
             # Calculate Y positions from TOP (convert to bottom-up for ReportLab)
-            # Top positions (from top edge)
-            y_top_photo = top_margin
+            # Top positions (from top edge, accounting for top padding)
+            y_top_photo = top_padding + top_margin
             y_top_name = y_top_photo + photo_height
             y_top_qr = y_top_name + name_height
             y_top_message = y_top_qr + qr_height + gap_before_msg
             y_top_bottom_box = y_top_message + message_height
             
-            # Convert to ReportLab coordinates (from bottom)
+            # Convert to ReportLab coordinates (from bottom, accounting for vertical padding)
             y_photo = page_height - y_top_photo - photo_height
             y_name = page_height - y_top_name - name_height
             y_qr = page_height - y_top_qr - qr_height
